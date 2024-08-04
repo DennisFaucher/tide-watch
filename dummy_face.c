@@ -52,8 +52,12 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
     watch_date_time date_time;
     int nowSeconds;
     int modSeconds;
+    int lowTideMinutes = 722;
+    int lowTideHourGap;
 //    char buf[7];
     char tideString[7];
+    char modHour[3];
+    char eightString[9];
     switch (event.event_type) {
         case EVENT_ACTIVATE:
             // Show your initial UI here.
@@ -64,10 +68,17 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
             nowSeconds = date_time.unit.second;
             modSeconds = nowSeconds % 12;   //Actual mod (%) will be based on 12 hours and 2 minutes = 722 minutes
                                             // Maybe base on elapsed UNIX time
+            if(nowSeconds==0){
+                lowTideMinutes = lowTideMinutes - 1;
+                if (lowTideMinutes < 0) {
+                    lowTideMinutes = 722; // reset the counter to the next low tide in 12 hours, 2 minutes
+                }
+                lowTideHourGap = (lowTideMinutes / 60);
+            }
             //sprintf(buf, "%2d", nowSeconds);
             //watch_display_string(buf, 4);
             //watch_display_string("llllll", 4); //4th position is the first position of the large characters
-            switch (modSeconds) {
+            switch (lowTideHourGap) {
                 case 0:
                     strcpy(tideString, "llllll");
                     break;
@@ -110,7 +121,11 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
                 default:
                     strcpy(tideString, "??????");
             }
-            watch_display_string(tideString, 4); //4th position is the first position of the large characters
+            //strcpy(modHour, lowTideHourGap);
+            sprintf(eightString, "%02d%s", lowTideHourGap, tideString);
+            //watch_display_string(modHour, 2);
+            //watch_display_string(tideString, 4); //4th position is the first position of the large characters
+            watch_display_string(eightString, 2);
             break;
         case EVENT_LIGHT_BUTTON_UP:
             // You can use the Light button for your own purposes. Note that by default, Movement will also
