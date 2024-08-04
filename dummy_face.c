@@ -28,7 +28,6 @@
 #include "watch.h"
 #include "watch_private_display.h"
 
-
 void dummy_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
     (void) watch_face_index;
@@ -52,7 +51,11 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
     watch_date_time date_time;
     int nowSeconds;
     int modSeconds;
-    int lowTideMinutes = 722;
+    int lowTideMinutes;
+    if(lowTideMinutes < 0 || lowTideMinutes > 722){
+        lowTideMinutes = 722;
+    }
+    //int lowTideMinutes = 722;
     int lowTideHourGap;
 //    char buf[7];
     char tideString[7];
@@ -69,7 +72,7 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
             modSeconds = nowSeconds % 12;   //Actual mod (%) will be based on 12 hours and 2 minutes = 722 minutes
                                             // Maybe base on elapsed UNIX time
             if(nowSeconds==0){
-                lowTideMinutes = lowTideMinutes - 1;
+                lowTideMinutes = lowTideMinutes - 15;
                 if (lowTideMinutes < 0) {
                     lowTideMinutes = 722; // reset the counter to the next low tide in 12 hours, 2 minutes
                 }
@@ -134,6 +137,8 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
             break;
         case EVENT_ALARM_BUTTON_UP:
             // Just in case you have need for another button.
+            // Maybe use this button to adjust the current number of hours from low tide
+            // lowTideMinutes = lowTideMinutes + 60;
             break;
         case EVENT_TIMEOUT:
             // Your watch face will receive this event after a period of inactivity. If it makes sense to resign,
