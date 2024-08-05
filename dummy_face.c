@@ -253,10 +253,19 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
             // illuminate the LED in response to EVENT_LIGHT_BUTTON_DOWN; to suppress that behavior, add an
             // empty case for EVENT_LIGHT_BUTTON_DOWN.
             break;
+        case EVENT_LIGHT_LONG_PRESS:
+            break;
         case EVENT_ALARM_BUTTON_UP:
             // Just in case you have need for another button.
             // Maybe use this button to adjust the current number of hours from low tide
             // lowTideMinutes = lowTideMinutes + 60;
+            if (lowTideHourGap > 0){
+               lowTideHourGap = lowTideHourGap - 1;
+            } else {
+               lowTideHourGap = 12;
+            }
+             sprintf(eightString, "%02d%s", lowTideHourGap, "888888");
+             watch_display_string(eightString, 2);
             break;
         case EVENT_TIMEOUT:
             // Your watch face will receive this event after a period of inactivity. If it makes sense to resign,
