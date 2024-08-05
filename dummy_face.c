@@ -29,6 +29,7 @@
 #include "watch_private_display.h"
 int lowTideMinutes = 722; //Changed to a global variable
 int lowTideHourGap = 0;
+int resetTide = 0;
 
 void dummy_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
@@ -154,8 +155,8 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
         case EVENT_ACTIVATE:
             // Show your initial UI here.
              //lowTideMinutes = 722;
-             sprintf(eightString, "%02d%s", 0, "llllll");
-             watch_display_string(eightString, 2);
+             //sprintf(eightString, "%02d%s", 0, "llllll");
+             //watch_display_string(eightString, 2);
             break;
         case EVENT_TICK:
             // If needed, update your display here.
@@ -174,8 +175,13 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
             //differenceUNIXTime = currentUNIXTime - realLowTideTime; // UNIX Time is number of seconds since 1/1/1970, so this is seconds elapsed
                                                                     // 1722822780 - 1722540420 = 282360
             // Low tide every 722 minutes = 43320 seconds. Can we MOD 43320?
+            
+            if(resetTide == 1){
+                lowTideMinutes = 722;
+                resetTide = 0;
+            }
 
-            if(nowSeconds==0){
+            if(nowSeconds==0){ 				// Just for testing. Change tide once a minute.
                 lowTideMinutes = lowTideMinutes - 60;
                 lowTideHourGap = (lowTideMinutes / 60);
             }
@@ -237,8 +243,10 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
             break;
          case EVENT_ALARM_LONG_PRESS: // Maybe use a long press to reset to 722 minutes
              lowTideMinutes = 722;
-             sprintf(eightString, "%02d%s", 1, "llllll");
+             lowTideHourGap = (lowTideMinutes / 60);
+             sprintf(eightString, "%02d%s", lowTideHourGap, "llllll");
              watch_display_string(eightString, 2);
+             resetTide = 1;
              break;
         case EVENT_LIGHT_BUTTON_UP:
             // You can use the Light button for your own purposes. Note that by default, Movement will also
