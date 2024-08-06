@@ -29,7 +29,7 @@
 #include "watch_private_display.h"
 int lowTideMinutes = 722; //Changed to a global variable
 int lowTideHourGap = 0;
-int resetTide = 0;
+int resetTide = 0; // change for compile errors to fix
 
 void dummy_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
@@ -44,108 +44,108 @@ void dummy_face_setup(movement_settings_t *settings, uint8_t watch_face_index, v
 
 void dummy_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
-    dummy_state_t *state = (dummy_state_t *)context;
+    //dummy_state_t *state = (dummy_state_t *)context;
 
     // Handle any tasks related to your watch face coming on screen.
 }
 
 // Function taken from `src/time/__year_to_secs.c` of musl libc
 // https://musl.libc.org
-static uint32_t __year_to_secs(uint32_t year, int *is_leap)
-{
-	if (year-2ULL <= 136) {
-		int y = year;
-		int leaps = (y-68)>>2;
-		if (!((y-68)&3)) {
-			leaps--;
-			if (is_leap) *is_leap = 1;
-		} else if (is_leap) *is_leap = 0;
-		return 31536000*(y-70) + 86400*leaps;
-	}
-
-	int cycles, centuries, leaps, rem;
-
-	if (!is_leap) is_leap = &(int){0};
-	cycles = (year-100) / 400;
-	rem = (year-100) % 400;
-	if (rem < 0) {
-		cycles--;
-		rem += 400;
-	}
-	if (!rem) {
-		*is_leap = 1;
-		centuries = 0;
-		leaps = 0;
-	} else {
-		if (rem >= 200) {
-			if (rem >= 300) centuries = 3, rem -= 300;
-			else centuries = 2, rem -= 200;
-		} else {
-			if (rem >= 100) centuries = 1, rem -= 100;
-			else centuries = 0;
-		}
-		if (!rem) {
-			*is_leap = 0;
-			leaps = 0;
-		} else {
-			leaps = rem / 4U;
-			rem %= 4U;
-			*is_leap = !rem;
-		}
-	}
-
-	leaps += 97*cycles + 24*centuries - *is_leap;
-
-	return (year-100) * 31536000LL + leaps * 86400LL + 946684800 + 86400;
-}
+//static uint32_t __year_to_secs(uint32_t year, int *is_leap)
+//{
+//	if (year-2ULL <= 136) {
+//		int y = year;
+//		int leaps = (y-68)>>2;
+//		if (!((y-68)&3)) {
+//			leaps--;
+//			if (is_leap) *is_leap = 1;
+//		} else if (is_leap) *is_leap = 0;
+//		return 31536000*(y-70) + 86400*leaps;
+//	}
+//
+//	int cycles, centuries, leaps, rem;
+//
+//	if (!is_leap) is_leap = &(int){0};
+//	cycles = (year-100) / 400;
+//	rem = (year-100) % 400;
+//	if (rem < 0) {
+//		cycles--;
+//		rem += 400;
+//	}
+//	if (!rem) {
+//		*is_leap = 1;
+//		centuries = 0;
+//		leaps = 0;
+//	} else {
+//		if (rem >= 200) {
+//			if (rem >= 300) centuries = 3, rem -= 300;
+//			else centuries = 2, rem -= 200;
+//		} else {
+//			if (rem >= 100) centuries = 1, rem -= 100;
+//			else centuries = 0;
+//		}
+//		if (!rem) {
+//			*is_leap = 0;
+//			leaps = 0;
+//		} else {
+//			leaps = rem / 4U;
+//			rem %= 4U;
+//			*is_leap = !rem;
+//		}
+//	}
+//
+//	leaps += 97*cycles + 24*centuries - *is_leap;
+//
+//	return (year-100) * 31536000LL + leaps * 86400LL + 946684800 + 86400;
+//}
 
 // Function taken from `src/time/__month_to_secs.c` of musl libc
 // https://musl.libc.org
-static int __month_to_secs(int month, int is_leap)
-{
-	static const int secs_through_month[] = {
-		0, 31*86400, 59*86400, 90*86400,
-		120*86400, 151*86400, 181*86400, 212*86400,
-		243*86400, 273*86400, 304*86400, 334*86400 };
-	int t = secs_through_month[month];
-	if (is_leap && month >= 2) t+=86400;
-	return t;
-}
+//static int __month_to_secs(int month, int is_leap)
+//{
+//	static const int secs_through_month[] = {
+//		0, 31*86400, 59*86400, 90*86400,
+//		120*86400, 151*86400, 181*86400, 212*86400,
+//		243*86400, 273*86400, 304*86400, 334*86400 };
+//	int t = secs_through_month[month];
+//	if (is_leap && month >= 2) t+=86400;
+//	return t;
+//}
 // Function adapted from `src/time/__tm_to_secs.c` of musl libc
 // https://musl.libc.org
-uint32_t __watch_utility_convert_to_unix_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second, uint32_t utc_offset) {
-    int is_leap;
-
-    // POSIX tm struct starts year at 1900 and month at 0
-    // https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/time.h.html
-    uint32_t timestamp = __year_to_secs(year - 1900, &is_leap);
-    timestamp += __month_to_secs(month - 1, is_leap);
-
-    // Regular conversion from musl libc
-    timestamp += (day - 1) * 86400;
-    timestamp += hour * 3600;
-    timestamp += minute * 60;
-    timestamp += second;
-    timestamp -= utc_offset;
-
-    return timestamp;
-}
+//uint32_t __watch_utility_convert_to_unix_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second, uint32_t utc_offset) {
+//    int is_leap;
+//
+//    // POSIX tm struct starts year at 1900 and month at 0
+//    // https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/time.h.html
+//    uint32_t timestamp = __year_to_secs(year - 1900, &is_leap);
+//    timestamp += __month_to_secs(month - 1, is_leap);
+//
+//    // Regular conversion from musl libc
+//    timestamp += (day - 1) * 86400;
+//    timestamp += hour * 3600;
+//    timestamp += minute * 60;
+//    timestamp += second;
+//    timestamp -= utc_offset;
+//
+//    return timestamp;
+//}
 
 bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
-    dummy_state_t *state = (dummy_state_t *)context;
+    //dummy_state_t *state = (dummy_state_t *)context;
     watch_date_time date_time;
     int nowSeconds;
-    int modSeconds;
+    //int modSeconds;
     //int lowTideMinutes;
     //if(lowTideMinutes < 0 || lowTideMinutes > 722){
     //    lowTideMinutes = 722;
     //}
     //int lowTideMinutes = 722;
     //int lowTideHourGap = 0;
-    int NumTidesRemainder;
+    //int NumTidesRemainder;
 //    char buf[7];
     char tideString[7];
-    char modHour[3];
+    //char modHour[3];
     char eightString[9];
     //uint32_t realLowTideTime;
     //uint32_t currentUNIXTime;
@@ -162,7 +162,7 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
             // If needed, update your display here.
             date_time = watch_rtc_get_date_time();
             nowSeconds = date_time.unit.second;
-            modSeconds = nowSeconds % 12;   //Actual mod (%) will be based on 12 hours and 2 minutes = 722 minutes
+            //modSeconds = nowSeconds % 12;   //Actual mod (%) will be based on 12 hours and 2 minutes = 722 minutes
                                             // Maybe base on elapsed UNIX time
             // UNIX Time Test
             // uint32_t watch_utility_convert_to_unix_time(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute,
@@ -262,7 +262,7 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
             if (lowTideHourGap > 0){
                lowTideHourGap = lowTideHourGap - 1;
             } else {
-               lowTideHourGap = 12;
+               lowTideHourGap = 11;
             }
              sprintf(eightString, "%02d%s", lowTideHourGap, "888888");
              watch_display_string(eightString, 2);
