@@ -143,8 +143,8 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
     //int lowTideMinutes = 722;
     //int lowTideHourGap = 0;
     //int NumTidesRemainder;
-//    char buf[7];
-    char tideString[7];
+    //char buf[7];
+    //char tideString[7];
     //char modHour[3];
     char eightString[9];
     //uint32_t realLowTideTime;
@@ -176,14 +176,14 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
                                                                     // 1722822780 - 1722540420 = 282360
             // Low tide every 722 minutes = 43320 seconds. Can we MOD 43320?
             
-            if(resetTide == 1){
-                lowTideMinutes = 722;
-                resetTide = 0;
-            }
+            //if(resetTide == 1){ // Not sure if this if statement is actually needed. Might be a global variable hack.
+            //    lowTideMinutes = 722;
+            //    resetTide = 0;
+            //}
 
-            if(nowSeconds==0){ 				// Just for testing. Change tide once a minute.
-                lowTideMinutes = lowTideMinutes - 60;
-                lowTideHourGap = (lowTideMinutes / 60);
+            if(nowSeconds==0){ 				// Change tide once every 60.166 minutes (722/12)
+                lowTideMinutes = lowTideMinutes - 1;
+                lowTideHourGap = (lowTideMinutes / 60.166);
             }
 
             //NumTidesRemainder = (differenceUNIXTime % 43320)/60/60; // Find the remainder after dividing by tide cycle seconds
@@ -196,76 +196,77 @@ bool dummy_face_loop(movement_event_t event, movement_settings_t *settings, void
 
             switch (lowTideHourGap) {
                 case 0:
-                    strcpy(tideString, "llllll");
+                    strcpy(eightString, " 0llllll");
                     break;
                 case 1:
-                    strcpy(tideString, "-----)");
+                    strcpy(eightString, " 1-----)");
                     break;
                 case 2:
-                    strcpy(tideString, "----))");
+                    strcpy(eightString, " 2----))");
                     break;
                 case 3:
-                    strcpy(tideString, "---)))");
+                    strcpy(eightString, " 3---)))");
                     break;
                 case 4:
-                    strcpy(tideString, "--))))");
+                    strcpy(eightString, " 4--))))");
                     break;
                 case 5:
-                    strcpy(tideString, "-)))))");
+                    strcpy(eightString, " 5-)))))");
                     break;
                 case 6:
-                    strcpy(tideString, "hhhhhh");
+                    strcpy(eightString, " 6hhhhhh");
                     break;
                 case 7:
-                    strcpy(tideString, "-(((((");
+                    strcpy(eightString, " 7-(((((");
                     break;
                 case 8:
-                    strcpy(tideString, "--((((");
+                    strcpy(eightString, " 8--((((");
                     break;
                 case 9:
-                    strcpy(tideString, "---(((");
+                    strcpy(eightString, " 9---(((");
                     break;
                 case 10:
-                    strcpy(tideString, "----((");
+                    strcpy(eightString, "10----((");
                     break;
                 case 11:
-                    strcpy(tideString, "-----(");
+                    strcpy(eightString, "11-----(");
                     break;
                 case 12:
-                    strcpy(tideString, "llllll");
+                    strcpy(eightString, "12llllll");
                     break;
                 default:
-                    strcpy(tideString, "??????");
+                    strcpy(eightString, "????????");
             }
-            sprintf(eightString, "%02d%s", lowTideHourGap, tideString);
+            //sprintf(eightString, "%02d%06d", lowTideHourGap, lowTideMinutes);
             // 4th position is the first position of the large characters
             watch_display_string(eightString, 2);
             break;
-         case EVENT_ALARM_LONG_PRESS: // Maybe use a long press to reset to 722 minutes
-             lowTideMinutes = 722;
-             lowTideHourGap = (lowTideMinutes / 60);
-             sprintf(eightString, "%02d%s", lowTideHourGap, "llllll");
-             watch_display_string(eightString, 2);
-             resetTide = 1;
+
+         case EVENT_ALARM_LONG_PRESS: // Use a long press to reset lowTideMinutes to 722 minutes (low tide)
+             //lowTideMinutes = 722;
+             //lowTideHourGap = (lowTideMinutes / 60.166);
+             //sprintf(eightString, "%02d%s", lowTideHourGap, "llllll");
+             //watch_display_string(eightString, 2);
+             //resetTide = 1;
              break;
+        case EVENT_ALARM_BUTTON_UP: // Use quick press of alarm to adjust the tide one segment (~ 1hour)
+            if (lowTideHourGap == 0){
+               lowTideHourGap = 11;
+               lowTideMinutes = lowTideHourGap * 60.166;
+            } else  {
+               lowTideHourGap = lowTideHourGap - 1;
+               lowTideMinutes = lowTideHourGap * 60.166;
+            }
+             //sprintf(eightString, "%02d%s", lowTideHourGap, "888888");
+             //watch_display_string(eightString, 2);
+            break;
+
         case EVENT_LIGHT_BUTTON_UP:
             // You can use the Light button for your own purposes. Note that by default, Movement will also
             // illuminate the LED in response to EVENT_LIGHT_BUTTON_DOWN; to suppress that behavior, add an
             // empty case for EVENT_LIGHT_BUTTON_DOWN.
             break;
         case EVENT_LIGHT_LONG_PRESS:
-            break;
-        case EVENT_ALARM_BUTTON_UP:
-            // Just in case you have need for another button.
-            // Maybe use this button to adjust the current number of hours from low tide
-            // lowTideMinutes = lowTideMinutes + 60;
-            if (lowTideHourGap > 0){
-               lowTideHourGap = lowTideHourGap - 1;
-            } else {
-               lowTideHourGap = 11;
-            }
-             sprintf(eightString, "%02d%s", lowTideHourGap, "888888");
-             watch_display_string(eightString, 2);
             break;
         case EVENT_TIMEOUT:
             // Your watch face will receive this event after a period of inactivity. If it makes sense to resign,
