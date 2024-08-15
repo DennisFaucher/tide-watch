@@ -170,12 +170,12 @@ bool tidecount_face_loop(movement_event_t event, movement_settings_t *settings, 
             hoursTil = deltaMinutes / 60;
             minutesTil = deltaMinutes % 60;
             if(hoursTil >= 6){
-                sprintf(tideDirection,"))");
+                sprintf(tideDirection,"hi");
             }
             else{
-                sprintf(tideDirection,"((");
+                sprintf(tideDirection,"lo");
             }    
-            sprintf(tenBuf, "%s   %02d:%02d",tideDirection,hoursTil,minutesTil);
+            sprintf(tenBuf, "%s  %02d%02d",tideDirection,hoursTil,minutesTil);
 
             watch_display_string(tenBuf, 0);
 
@@ -208,12 +208,12 @@ bool tidecount_face_loop(movement_event_t event, movement_settings_t *settings, 
             hoursTil = deltaMinutes / 60;
             minutesTil = deltaMinutes % 60;
             if(hoursTil >= 6){
-                sprintf(tideDirection,"))");
+                sprintf(tideDirection,"hi");
             }
             else{
-                sprintf(tideDirection,"((");
+                sprintf(tideDirection,"lo");
             }    
-            sprintf(tenBuf, "%s   %02d:%02d",tideDirection,hoursTil,minutesTil);
+            sprintf(tenBuf, "%s  %02d%02d",tideDirection,hoursTil,minutesTil);
             watch_display_string(tenBuf, 0);
 
             break;
