@@ -152,7 +152,7 @@ bool tidecount_face_loop(movement_event_t event, movement_settings_t *settings, 
         case EVENT_ACTIVATE:
             // Show your initial UI here.
             //char buf[6 + 1];
-
+            watch_set_colon();
             date_time = watch_rtc_get_date_time();
             currentUNIXTime = __watch_utility_convert_to_unix_time(date_time.unit.year, date_time.unit.month, date_time.unit.day, date_time.unit.hour, date_time.unit.minute, 0, -4);
             lastUNIXTime = currentUNIXTime;
@@ -174,8 +174,16 @@ bool tidecount_face_loop(movement_event_t event, movement_settings_t *settings, 
             }
             else{
                 sprintf(tideDirection,"lo");
-            }    
-            sprintf(tenBuf, "%s  %02d%02d",tideDirection,hoursTil,minutesTil);
+            }
+            sprintf(
+                tenBuf,
+                "%s  %2d%02d  ",
+                tideDirection,
+                hoursTil,
+                minutesTil
+             );
+
+//            sprintf(tenBuf, "%s  %02d%02d",tideDirection,hoursTil,minutesTil);
 
             watch_display_string(tenBuf, 0);
 
@@ -212,8 +220,16 @@ bool tidecount_face_loop(movement_event_t event, movement_settings_t *settings, 
             }
             else{
                 sprintf(tideDirection,"lo");
-            }    
-            sprintf(tenBuf, "%s  %02d%02d",tideDirection,hoursTil,minutesTil);
+            }
+            sprintf(
+                tenBuf,
+                "%s  %2d%02d  ",
+                tideDirection,
+                hoursTil,
+                minutesTil
+             );
+
+//            sprintf(tenBuf, "%s  %02d%02d",tideDirection,hoursTil,minutesTil);
             watch_display_string(tenBuf, 0);
 
             break;
